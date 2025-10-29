@@ -1,0 +1,2 @@
+使用前，打开docker ，打开qdrant。
+python 3.10
