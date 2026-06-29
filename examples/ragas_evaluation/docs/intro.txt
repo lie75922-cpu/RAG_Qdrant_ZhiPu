@@ -1,0 +1,2 @@
+RAG evaluation checks whether retrieved contexts are relevant and whether generated answers are grounded. RAGForgeX includes lightweight retrieval metrics and an optional Ragas adapter.
+

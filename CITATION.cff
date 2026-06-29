@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: RAGForgeX
+message: "If you use RAGForgeX, please cite this repository."
+type: software
+authors:
+  - name: lie75922-cpu
+version: 0.1.0
+date-released: 2026-06-29
+license: MIT
+

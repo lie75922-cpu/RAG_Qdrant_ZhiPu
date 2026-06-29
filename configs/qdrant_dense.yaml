@@ -1,0 +1,36 @@
+project:
+  name: basic_qdrant_rag
+  output_dir: ./outputs/basic_qdrant_rag
+data:
+  input_dir: ./examples/basic_qdrant_rag/docs
+  parser:
+    name: docling
+  chunker:
+    name: recursive
+    chunk_size: 800
+    chunk_overlap: 120
+embedding:
+  name: sentence_transformers
+  model: sentence-transformers/all-MiniLM-L6-v2
+  dimension: 384
+store:
+  name: qdrant
+  url: ${QDRANT_URL:-http://localhost:6333}
+  collection_name: basic_qdrant_rag
+  recreate: true
+retrieval:
+  name: dense
+  top_k: 5
+reranker:
+  name: none
+generator:
+  name: openai_compatible
+  base_url: ${OPENAI_BASE_URL}
+  api_key: ${OPENAI_API_KEY}
+  model: ${OPENAI_MODEL:-gpt-4o-mini}
+  temperature: 0.1
+evaluation:
+  enabled: true
+  evaluators:
+    - retrieval_metrics
+

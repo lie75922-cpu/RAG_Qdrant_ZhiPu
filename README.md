@@ -1,62 +1,107 @@
-# RAG_Qdrant_ZhiPu
-A RAG-based question-answering system combining Zhipu's GLM-4 and Qdrant. It processes local documents, retrieves relevant fragments, and generates context-aware answers—ideal for knowledge bases and document queries.基于 RAG 的智能问答系统，结合智谱 GLM-4 与 Qdrant，处理本地文档、检索相关片段并生成上下文回答，适用于知识库、文档查询等场景。
+# RAGForgeX
 
+RAGForgeX is a modular toolkit for rapidly building, switching, and evaluating Retrieval-Augmented Generation pipelines. It provides unified interfaces for document parsers, chunkers, embedding models, vector stores, retrievers, rerankers, generators, and evaluators, allowing users to compare RAG designs through configuration files instead of rewriting code.
 
-# RAG 智能问答系统
+## Why RAGForgeX
 
-基于检索增强生成（RAG）技术的问答系统，结合智谱AI大语言模型与Qdrant向量数据库，实现对本地文档的智能查询与精准回答。
+RAG experiments often become hard to compare because each parser, vector store, retriever, and generator brings its own API shape. RAGForgeX keeps the orchestration layer small and explicit: mature open-source packages are used as optional dependencies behind adapters, while the project owns the common schema, configuration, CLI, examples, and evaluation flow.
 
-## 项目概述
+## Features
 
-本项目通过以下流程实现智能问答：
-1. 读取本地文档（支持PDF、Markdown、Word、TXT等格式）
-2. 采用多种文本分割策略处理文档
-3. 将文档向量存储至Qdrant向量数据库
-4. 基于用户查询检索相关文档片段
-5. 结合智谱GLM-4模型生成基于上下文的回答
+| Layer | v0.1 | Roadmap |
+| --- | --- | --- |
+| Parser | Text fallback, Docling adapter, LlamaIndex adapter | Unstructured, MinerU, Marker |
+| Chunker | Recursive, Token | Semantic, parent-child, Markdown |
+| Embedding | Deterministic local fallback, SentenceTransformers, OpenAI-compatible | BGE, hosted embedding providers |
+| Vector Store | In-memory, Qdrant, FAISS | Chroma, Milvus, Neo4j |
+| Retriever | Dense, BM25, Hybrid, RRF | Query rewrite, multi-query, graph |
+| Reranker | No-op | BGE reranker, CrossEncoder |
+| Generator | Echo fallback, OpenAI-compatible, Zhipu, Ollama | More OpenAI-compatible providers |
+| Evaluation | Retrieval metrics, optional Ragas | DeepEval, TruLens, tracing |
 
-## 环境要求
+## Quick Start
 
-- Python 3.10
-- Docker（用于运行Qdrant）
-- Qdrant向量数据库
+```bash
+python -m venv .venv
+. .venv/Scripts/activate
+pip install -e ".[dev]"
+ragforgex run --config configs/faiss_dense.yaml --question "What is RAGForgeX?"
+```
 
-## 依赖安装
+Start Qdrant for the Qdrant example:
 
-# 安装依赖包（根据实际导入库补充）
-pip install langchain langchain-community llama-index qdrant-client python-dotenv zhipuai
+```bash
+docker compose up -d qdrant
+ragforgex run --config configs/qdrant_dense.yaml --question "What does the toolkit compare?"
+```
 
-# 配置说明
-## 复制.env文件模板并配置：
-ZHIPUAI_API_KEY="你的智谱API密钥"
-collection_name="document_embeddings"
-model='sentence_bert'
-## 确保 Qdrant 服务已启动：
-# 启动Docker和Qdrant（参考a.txt）
-docker start qdrant
-# 使用步骤
-导入文档：将需要检索的文档放入./file目录，运行以下命令生成向量并存储：
-python main1.py
+## Python API
 
-测试检索（可选）：
-python main2.py
+```python
+from ragforgex import Pipeline
 
-智能问答：运行主程序并输入问题：
-python main.py
+pipeline = Pipeline.from_config("configs/faiss_dense.yaml")
+pipeline.index()
+answer = pipeline.ask("What is retrieval augmented generation?")
+print(answer.answer)
+print(answer.contexts)
+```
 
-# 文件结构
-RAG/
-├── file/               # 存放待处理的文档
-├── main.py             # 问答主程序
-├── main1.py            # 文档向量生成与存储
-├── main2.py            # 检索测试程序
-├── read_reg.py         # 文档读取与分割工具
-├── qdrant_emded_store.py  # Qdrant向量存储操作
-├── .env                # 环境变量配置
-├── .gitignore          # Git忽略文件
-└── a.txt               # 运行说明
-# 注意事项
-请确保智谱 API 密钥有效
-处理大文档时可能需要调整分割参数（chunk_size、chunk_overlap）
-首次运行需等待文档向量生成与存储完成
+## Configuration
+
+```yaml
+project:
+  name: faiss_local_rag
+  output_dir: ./outputs/faiss_local_rag
+data:
+  input_dir: ./examples/faiss_local_rag/docs
+  parser:
+    name: docling
+  chunker:
+    name: recursive
+    chunk_size: 500
+    chunk_overlap: 80
+embedding:
+  name: sentence_transformers
+  model: sentence-transformers/all-MiniLM-L6-v2
+  dimension: 384
+store:
+  name: faiss
+retrieval:
+  name: dense
+  top_k: 4
+generator:
+  name: openai_compatible
+  model: gpt-4o-mini
+```
+
+Environment variables such as `${OPENAI_API_KEY}` are expanded when loading YAML.
+
+## Architecture
+
+```text
+Parser -> Chunker -> Embedding -> Store -> Retriever -> Reranker -> Generator
+                                      \-> Evaluator -> Report
+```
+
+## Installation Notes
+
+The default test path uses lightweight fallbacks and does not require paid API keys. Optional integrations fail with clear installation messages if their dependency is missing.
+
+Useful extras:
+
+```bash
+pip install qdrant-client faiss-cpu sentence-transformers rank-bm25 ragas
+```
+
+## Examples
+
+- `examples/basic_qdrant_rag`: Qdrant-backed dense retrieval.
+- `examples/faiss_local_rag`: local FAISS-style retrieval with a deterministic fallback.
+- `examples/hybrid_retrieval`: dense plus BM25 retrieval with RRF fusion.
+- `examples/ragas_evaluation`: retrieval metrics and optional Ragas evaluation wiring.
+
+## Acknowledgements
+
+RAGForgeX is designed to wrap, not copy, mature open-source RAG ecosystem projects such as Qdrant, FAISS, sentence-transformers, rank-bm25, Docling, LlamaIndex, and Ragas.
 
