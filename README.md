@@ -1,10 +1,20 @@
 # RAGForgeX
 
-RAGForgeX is a modular toolkit for rapidly building, switching, and evaluating Retrieval-Augmented Generation pipelines. It provides unified interfaces for document parsers, chunkers, embedding models, vector stores, retrievers, rerankers, generators, and evaluators, allowing users to compare RAG designs through configuration files instead of rewriting code.
+**RAGForgeX** is a modular toolkit for rapidly building, switching, and evaluating Retrieval-Augmented Generation pipelines.
 
-## Why RAGForgeX
+It provides unified interfaces for document parsers, chunkers, embedding models, vector stores, retrievers, rerankers, generators, and evaluators. Instead of rewriting the entire RAG workflow for every experiment, users can compose different RAG pipelines through YAML configuration files and run them with a simple CLI command.
 
-RAG experiments often become hard to compare because each parser, vector store, retriever, and generator brings its own API shape. RAGForgeX keeps the orchestration layer small and explicit: mature open-source packages are used as optional dependencies behind adapters, while the project owns the common schema, configuration, CLI, examples, and evaluation flow.
+## Why RAGForgeX?
+
+RAG development often requires testing many combinations of components: different document parsers, chunking strategies, embedding models, vector databases, retrieval methods, rerankers, LLM providers, and evaluation frameworks.
+
+RAGForgeX is designed to make this process faster and more reproducible. It helps developers and researchers quickly compare different RAG designs before building a production system.
+
+## Core Idea
+
+> Configure once, switch freely, evaluate consistently.
+
+RAGForgeX does not aim to replace LangChain, LlamaIndex, Qdrant, FAISS, Ragas, or other open-source RAG tools. Instead, it provides a lightweight integration layer that wraps these tools through consistent interfaces and makes them easier to combine, test, and evaluate.
 
 ## Features
 
