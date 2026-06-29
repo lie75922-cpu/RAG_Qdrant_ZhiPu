@@ -1,0 +1,2 @@
+RAGForgeX helps users compose Retrieval-Augmented Generation pipelines from modular components. It focuses on unified interfaces, YAML configuration, and interchangeable adapters for parsers, chunkers, vector stores, retrievers, generators, and evaluators.
+

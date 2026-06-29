@@ -1,0 +1,2 @@
+RAGForgeX can run local experiments with a FAISS-style vector store. The local path is useful for fast prototypes, tests, and examples that should not require an external database service.
+

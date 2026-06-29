@@ -1,0 +1,7 @@
+from ragforgex.core.registry import EMBEDDINGS
+from ragforgex.embeddings.openai_compatible_embedding import OpenAICompatibleEmbedding
+from ragforgex.embeddings.sentence_transformers_embedding import SentenceTransformersEmbedding
+
+EMBEDDINGS.register("sentence_transformers", SentenceTransformersEmbedding)
+EMBEDDINGS.register("openai_compatible", OpenAICompatibleEmbedding)
+

@@ -1,0 +1,27 @@
+project:
+  name: qdrant_rerank_ragas
+data:
+  input_dir: ./examples/ragas_evaluation/docs
+  parser:
+    name: docling
+  chunker:
+    name: recursive
+embedding:
+  name: sentence_transformers
+  dimension: 384
+store:
+  name: qdrant
+  collection_name: qdrant_rerank_ragas
+retrieval:
+  name: dense
+  top_k: 5
+reranker:
+  name: none
+generator:
+  name: openai_compatible
+evaluation:
+  enabled: true
+  evaluators:
+    - retrieval_metrics
+    - ragas
+

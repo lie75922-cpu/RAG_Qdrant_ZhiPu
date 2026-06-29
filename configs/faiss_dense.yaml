@@ -1,0 +1,32 @@
+project:
+  name: faiss_local_rag
+  output_dir: ./outputs/faiss_local_rag
+data:
+  input_dir: ./examples/faiss_local_rag/docs
+  parser:
+    name: docling
+  chunker:
+    name: recursive
+    chunk_size: 500
+    chunk_overlap: 80
+embedding:
+  name: sentence_transformers
+  model: sentence-transformers/all-MiniLM-L6-v2
+  dimension: 384
+store:
+  name: faiss
+retrieval:
+  name: dense
+  top_k: 4
+reranker:
+  name: none
+generator:
+  name: openai_compatible
+  base_url: ${OPENAI_BASE_URL}
+  api_key: ${OPENAI_API_KEY}
+  model: ${OPENAI_MODEL:-gpt-4o-mini}
+evaluation:
+  enabled: true
+  evaluators:
+    - retrieval_metrics
+

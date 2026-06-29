@@ -1,0 +1,2 @@
+Hybrid retrieval combines dense vector search with lexical BM25 search. Reciprocal Rank Fusion can merge ranked result lists without requiring score calibration between retrieval methods.
+

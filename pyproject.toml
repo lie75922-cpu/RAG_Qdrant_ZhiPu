@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ragforgex"
+version = "0.1.0"
+description = "A modular toolkit for building, switching, and evaluating RAG pipelines."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "lie75922-cpu"}]
+dependencies = [
+  "numpy>=1.24",
+  "pyyaml>=6.0",
+  "typer>=0.12",
+  "requests>=2.31"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.5"]
+qdrant = ["qdrant-client>=1.9"]
+faiss = ["faiss-cpu>=1.8"]
+embeddings = ["sentence-transformers>=3.0"]
+bm25 = ["rank-bm25>=0.2"]
+ragas = ["ragas>=0.1"]
+parsers = ["docling>=2.0", "llama-index-core>=0.10"]
+all = ["qdrant-client>=1.9", "faiss-cpu>=1.8", "sentence-transformers>=3.0", "rank-bm25>=0.2", "ragas>=0.1"]
+
+[project.scripts]
+ragforgex = "ragforgex.cli.main:app"
+
+[tool.setuptools.packages.find]
+include = ["ragforgex*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+

@@ -1,0 +1,23 @@
+project:
+  name: qdrant_hybrid
+data:
+  input_dir: ./examples/hybrid_retrieval/docs
+  parser:
+    name: docling
+  chunker:
+    name: token
+    chunk_size: 120
+    chunk_overlap: 20
+embedding:
+  name: sentence_transformers
+  dimension: 384
+store:
+  name: qdrant
+  url: ${QDRANT_URL:-http://localhost:6333}
+  collection_name: qdrant_hybrid
+retrieval:
+  name: hybrid
+  top_k: 5
+generator:
+  name: openai_compatible
+
