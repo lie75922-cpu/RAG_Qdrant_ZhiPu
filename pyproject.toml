@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ragforgex"
-version = "0.1.0"
+version = "0.2.0"
 description = "A modular toolkit for building, switching, and evaluating RAG pipelines."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -24,8 +24,22 @@ faiss = ["faiss-cpu>=1.8"]
 embeddings = ["sentence-transformers>=3.0"]
 bm25 = ["rank-bm25>=0.2"]
 ragas = ["ragas>=0.1"]
+chroma = ["chromadb>=0.5"]
+milvus = ["pymilvus>=2.4"]
+rerankers = ["FlagEmbedding>=1.2"]
+deepeval = ["deepeval>=1.0"]
 parsers = ["docling>=2.0", "llama-index-core>=0.10"]
-all = ["qdrant-client>=1.9", "faiss-cpu>=1.8", "sentence-transformers>=3.0", "rank-bm25>=0.2", "ragas>=0.1"]
+all = [
+  "qdrant-client>=1.9",
+  "faiss-cpu>=1.8",
+  "sentence-transformers>=3.0",
+  "rank-bm25>=0.2",
+  "ragas>=0.1",
+  "chromadb>=0.5",
+  "pymilvus>=2.4",
+  "FlagEmbedding>=1.2",
+  "deepeval>=1.0"
+]
 
 [project.scripts]
 ragforgex = "ragforgex.cli.main:app"

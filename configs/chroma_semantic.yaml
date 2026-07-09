@@ -1,20 +1,28 @@
 project:
-  name: chroma_dense
+  name: chroma_semantic
 data:
   input_dir: ./examples/faiss_local_rag/docs
   parser:
     name: docling
   chunker:
-    name: recursive
+    name: semantic
+    max_sentences: 4
 embedding:
   name: sentence_transformers
   dimension: 384
 store:
   name: chroma
-  collection_name: chroma_dense
+  collection_name: chroma_semantic
 retrieval:
-  name: dense
+  name: query_rewrite
   top_k: 4
+reranker:
+  name: bge
 generator:
   name: openai_compatible
+evaluation:
+  enabled: true
+  evaluators:
+    - retrieval_metrics
+    - deepeval
 

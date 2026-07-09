@@ -1,6 +1,19 @@
 # RAGForgeX
 
-**RAGForgeX** is a modular toolkit for rapidly building, switching, and evaluating Retrieval-Augmented Generation pipelines.
+RAGForgeX is a modular toolkit for building, switching, and evaluating Retrieval-Augmented Generation pipelines. It provides unified interfaces for parsers, chunkers, embedding models, vector stores, retrievers, rerankers, generators, and evaluators, so users can compare RAG designs through YAML configuration instead of rewriting glue code.
+
+Read this introduction in other languages:
+
+- [中文介绍](README.zh-CN.md)
+- [한국어 소개](README.ko.md)
+ 
+## What Is New In V2
+
+- Chroma and Milvus vector store adapters with local fallback behavior.
+- Semantic and parent-child chunkers for more flexible indexing layouts.
+- Query rewrite retrieval for simple multi-query retrieval experiments.
+- BGE reranker adapter and DeepEval evaluator adapter with graceful optional dependency handling.
+- Expanded configs, docs, tests, and multilingual README introductions.
 
 It provides unified interfaces for document parsers, chunkers, embedding models, vector stores, retrievers, rerankers, generators, and evaluators. Instead of rewriting the entire RAG workflow for every experiment, users can compose different RAG pipelines through YAML configuration files and run them with a simple CLI command.
 
@@ -18,16 +31,16 @@ RAGForgeX does not aim to replace LangChain, LlamaIndex, Qdrant, FAISS, Ragas, o
 
 ## Features
 
-| Layer | v0.1 | Roadmap |
+| Layer | V2 support | Next |
 | --- | --- | --- |
 | Parser | Text fallback, Docling adapter, LlamaIndex adapter | Unstructured, MinerU, Marker |
-| Chunker | Recursive, Token | Semantic, parent-child, Markdown |
+| Chunker | Recursive, Token, Semantic, Parent-child | Markdown-aware, layout-aware |
 | Embedding | Deterministic local fallback, SentenceTransformers, OpenAI-compatible | BGE, hosted embedding providers |
-| Vector Store | In-memory, Qdrant, FAISS | Chroma, Milvus, Neo4j |
-| Retriever | Dense, BM25, Hybrid, RRF | Query rewrite, multi-query, graph |
-| Reranker | No-op | BGE reranker, CrossEncoder |
-| Generator | Echo fallback, OpenAI-compatible, Zhipu, Ollama | More OpenAI-compatible providers |
-| Evaluation | Retrieval metrics, optional Ragas | DeepEval, TruLens, tracing |
+| Vector Store | In-memory, Qdrant, FAISS, Chroma, Milvus | Neo4j, persisted local snapshots |
+| Retriever | Dense, BM25, Hybrid, RRF, Query rewrite | Multi-query, graph retrieval |
+| Reranker | No-op, BGE adapter | CrossEncoder, hosted rerank APIs |
+| Generator | Echo fallback, OpenAI-compatible, Zhipu, Ollama | Streaming generation |
+| Evaluation | Retrieval metrics, Ragas adapter, DeepEval adapter | TruLens, Phoenix, Langfuse |
 
 ## Quick Start
 
@@ -36,6 +49,12 @@ python -m venv .venv
 . .venv/Scripts/activate
 pip install -e ".[dev]"
 ragforgex run --config configs/faiss_dense.yaml --question "What is RAGForgeX?"
+```
+
+Try a V2 config:
+
+```bash
+ragforgex run --config configs/chroma_semantic.yaml --question "What does the toolkit compare?"
 ```
 
 Start Qdrant for the Qdrant example:
@@ -50,7 +69,7 @@ ragforgex run --config configs/qdrant_dense.yaml --question "What does the toolk
 ```python
 from ragforgex import Pipeline
 
-pipeline = Pipeline.from_config("configs/faiss_dense.yaml")
+pipeline = Pipeline.from_config("configs/chroma_semantic.yaml")
 pipeline.index()
 answer = pipeline.ask("What is retrieval augmented generation?")
 print(answer.answer)
@@ -61,28 +80,31 @@ print(answer.contexts)
 
 ```yaml
 project:
-  name: faiss_local_rag
-  output_dir: ./outputs/faiss_local_rag
+  name: chroma_semantic
 data:
   input_dir: ./examples/faiss_local_rag/docs
   parser:
     name: docling
   chunker:
-    name: recursive
-    chunk_size: 500
-    chunk_overlap: 80
+    name: semantic
 embedding:
   name: sentence_transformers
-  model: sentence-transformers/all-MiniLM-L6-v2
   dimension: 384
 store:
-  name: faiss
+  name: chroma
+  collection_name: chroma_semantic
 retrieval:
-  name: dense
+  name: query_rewrite
   top_k: 4
+reranker:
+  name: bge
 generator:
   name: openai_compatible
-  model: gpt-4o-mini
+evaluation:
+  enabled: true
+  evaluators:
+    - retrieval_metrics
+    - deepeval
 ```
 
 Environment variables such as `${OPENAI_API_KEY}` are expanded when loading YAML.
@@ -96,12 +118,12 @@ Parser -> Chunker -> Embedding -> Store -> Retriever -> Reranker -> Generator
 
 ## Installation Notes
 
-The default test path uses lightweight fallbacks and does not require paid API keys. Optional integrations fail with clear installation messages if their dependency is missing.
+The default test path uses lightweight fallbacks and does not require paid API keys. Optional integrations fail gracefully or fall back to local behavior when their dependency is missing.
 
 Useful extras:
 
 ```bash
-pip install qdrant-client faiss-cpu sentence-transformers rank-bm25 ragas
+pip install qdrant-client faiss-cpu sentence-transformers rank-bm25 ragas chromadb pymilvus FlagEmbedding deepeval
 ```
 
 ## Examples
@@ -110,8 +132,18 @@ pip install qdrant-client faiss-cpu sentence-transformers rank-bm25 ragas
 - `examples/faiss_local_rag`: local FAISS-style retrieval with a deterministic fallback.
 - `examples/hybrid_retrieval`: dense plus BM25 retrieval with RRF fusion.
 - `examples/ragas_evaluation`: retrieval metrics and optional Ragas evaluation wiring.
+- `configs/chroma_semantic.yaml`: semantic chunking, Chroma adapter, query rewrite, BGE reranking, and DeepEval wiring.
+- `configs/milvus_parent_child.yaml`: parent-child chunking with the Milvus adapter.
+
+## Optimization Plan
+
+- Persist indexes and experiment artifacts for repeatable benchmark runs.
+- Add typed config validation with richer diagnostics and schema export.
+- Add async ingestion, batch embedding, and streaming generation.
+- Add graph extraction, Neo4j storage, and GraphRAG examples.
+- Add reproducible evaluation reports across datasets, retrievers, and generators.
 
 ## Acknowledgements
 
-RAGForgeX is designed to wrap, not copy, mature open-source RAG ecosystem projects such as Qdrant, FAISS, sentence-transformers, rank-bm25, Docling, LlamaIndex, and Ragas.
+RAGForgeX is designed to wrap, not copy, mature open-source RAG ecosystem projects such as Qdrant, FAISS, Chroma, Milvus, sentence-transformers, rank-bm25, Docling, LlamaIndex, Ragas, DeepEval, and FlagEmbedding.
 
