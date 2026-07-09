@@ -6,7 +6,7 @@ Read this introduction in other languages:
 
 - [中文介绍](README.zh-CN.md)
 - [한국어 소개](README.ko.md)
-
+ 
 ## What Is New In V2
 
 - Chroma and Milvus vector store adapters with local fallback behavior.
@@ -15,9 +15,19 @@ Read this introduction in other languages:
 - BGE reranker adapter and DeepEval evaluator adapter with graceful optional dependency handling.
 - Expanded configs, docs, tests, and multilingual README introductions.
 
-## Why RAGForgeX
+It provides unified interfaces for document parsers, chunkers, embedding models, vector stores, retrievers, rerankers, generators, and evaluators. Instead of rewriting the entire RAG workflow for every experiment, users can compose different RAG pipelines through YAML configuration files and run them with a simple CLI command.
 
-RAG experiments often become hard to compare because each parser, vector store, retriever, and generator brings its own API shape. RAGForgeX keeps the orchestration layer small and explicit: mature open-source packages are used as optional dependencies behind adapters, while the project owns the common schema, configuration, CLI, examples, and evaluation flow.
+## Why RAGForgeX?
+
+RAG development often requires testing many combinations of components: different document parsers, chunking strategies, embedding models, vector databases, retrieval methods, rerankers, LLM providers, and evaluation frameworks.
+
+RAGForgeX is designed to make this process faster and more reproducible. It helps developers and researchers quickly compare different RAG designs before building a production system.
+
+## Core Idea
+
+> Configure once, switch freely, evaluate consistently.
+
+RAGForgeX does not aim to replace LangChain, LlamaIndex, Qdrant, FAISS, Ragas, or other open-source RAG tools. Instead, it provides a lightweight integration layer that wraps these tools through consistent interfaces and makes them easier to combine, test, and evaluate.
 
 ## Features
 
