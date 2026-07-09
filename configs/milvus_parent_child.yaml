@@ -1,22 +1,26 @@
 project:
-  name: milvus_hybrid
+  name: milvus_parent_child
 data:
   input_dir: ./examples/hybrid_retrieval/docs
   parser:
     name: docling
   chunker:
-    name: token
-    chunk_size: 120
-    chunk_overlap: 20
+    name: parent_child
+    parent_size: 1000
+    child_size: 300
+    child_overlap: 50
 embedding:
   name: sentence_transformers
   dimension: 384
 store:
   name: milvus
-  collection_name: milvus_hybrid
+  uri: http://localhost:19530
+  collection_name: milvus_parent_child
 retrieval:
   name: hybrid
   top_k: 5
+reranker:
+  name: bge
 generator:
   name: openai_compatible
 
