@@ -15,15 +15,21 @@
 
 ## v0.3
 
+- Typed configuration validation.
+- Local index persistence for FAISS-compatible stores.
+- Staged CLI commands for indexing, asking, evaluation, and component discovery.
+- JSON and Markdown evaluation reports.
+
+## v0.4
+
 - LightRAG adapter.
 - Neo4j-backed graph retrieval.
 - GraphRAG examples.
 
 ## Optimization Plan
 
-- Add persisted local indexes for FAISS, Chroma, and Qdrant snapshots.
+- Add persisted local indexes for Chroma and Qdrant snapshots.
 - Add benchmark datasets and comparable experiment reports.
 - Add streaming generation and async ingestion.
-- Add typed config validation with richer error messages.
 - Add graph extraction and Neo4j examples.
 

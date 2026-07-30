@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -22,6 +24,10 @@ class FAISSStore(BaseStore):
             self._faiss = faiss
         except Exception:
             self._faiss = None
+
+    @property
+    def chunks(self) -> list[Chunk]:
+        return self._chunks
 
     def add(self, chunks: list[Chunk], vectors: list[list[float]]) -> None:
         if not chunks:
@@ -51,4 +57,33 @@ class FAISSStore(BaseStore):
             for idx, score in pairs
             if idx >= 0
         ]
+
+    def save(self, path: str | Path) -> None:
+        if self._vectors is None:
+            raise ValueError("Cannot save an empty vector store.")
+        target = Path(path)
+        target.mkdir(parents=True, exist_ok=True)
+        np.save(target / "vectors.npy", self._vectors)
+        payload = {
+            "dimension": self.dimension,
+            "chunks": [{"text": chunk.text, "metadata": chunk.metadata} for chunk in self._chunks],
+        }
+        (target / "chunks.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    def load(self, path: str | Path) -> None:
+        target = Path(path)
+        vectors_path = target / "vectors.npy"
+        chunks_path = target / "chunks.json"
+        if not vectors_path.exists() or not chunks_path.exists():
+            raise FileNotFoundError(f"No persisted FAISSStore index found in `{target}`.")
+        self._vectors = np.load(vectors_path).astype(np.float32)
+        payload = json.loads(chunks_path.read_text(encoding="utf-8"))
+        self.dimension = int(payload["dimension"])
+        self._chunks = [
+            Chunk(text=item["text"], metadata=item.get("metadata", {}))
+            for item in payload.get("chunks", [])
+        ]
+        if self._faiss is not None:
+            self._index = self._faiss.IndexFlatIP(self.dimension)
+            self._index.add(self._vectors)
 

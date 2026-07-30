@@ -4,7 +4,7 @@ message: "If you use RAGForgeX, please cite this repository."
 type: software
 authors:
   - name: lie75922-cpu
-version: 0.2.0
-date-released: 2026-07-09
+version: 0.3.0
+date-released: 2026-07-30
 license: MIT
 

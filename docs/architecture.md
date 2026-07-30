@@ -9,3 +9,10 @@ Parser -> Chunker -> Embedding -> Store -> Retriever -> Reranker -> Generator
 
 Each component is selected by name from YAML and instantiated through a registry.
 
+V3 adds a validation and reporting layer:
+
+```text
+YAML -> Config validation -> Pipeline -> Index persistence
+                              \-> Answer report -> JSON / Markdown
+```
+

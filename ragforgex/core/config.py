@@ -9,6 +9,8 @@ from typing import Any
 
 import yaml
 
+from ragforgex.core.config_schema import validate_config
+
 _ENV_PATTERN = re.compile(r"\$\{([A-Z0-9_]+)(?::-(.*?))?\}")
 
 
@@ -28,4 +30,6 @@ def load_config(path: str | Path) -> dict[str, Any]:
         data = yaml.safe_load(handle) or {}
     if not isinstance(data, dict):
         raise ValueError("Configuration root must be a mapping.")
-    return _expand_env(data)
+    expanded = _expand_env(data)
+    validate_config(expanded)
+    return expanded

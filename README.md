@@ -7,7 +7,15 @@ Read this introduction in other languages:
 - [中文介绍](README.zh-CN.md)
 - [한국어 소개](README.ko.md)
 
-## What Is New In V2
+## What Is New In V3
+
+- Typed YAML configuration validation with clear errors.
+- Local index persistence for FAISS-compatible stores.
+- Staged CLI commands: `index`, `ask`, `evaluate`, and `components`.
+- JSON and Markdown reports for answers, contexts, scores, timing, and evaluator output.
+- Runtime metadata for project name, retriever, top-k, and duration.
+
+## What Was Added In V2
 
 - Chroma and Milvus vector store adapters with local fallback behavior.
 - Semantic and parent-child chunkers for more flexible indexing layouts.
@@ -45,6 +53,15 @@ Try a V2 config:
 
 ```bash
 ragforgex run --config configs/chroma_semantic.yaml --question "What does the toolkit compare?"
+```
+
+Use the staged V3 workflow:
+
+```bash
+ragforgex index --config configs/faiss_dense.yaml --output outputs/faiss_local_rag/index
+ragforgex ask --config configs/faiss_dense.yaml --load-index --index-path outputs/faiss_local_rag/index --question "What is RAGForgeX?"
+ragforgex evaluate --config configs/faiss_dense.yaml --question "What is RAGForgeX?" --output outputs/faiss_local_rag
+ragforgex components
 ```
 
 Start Qdrant for the Qdrant example:
@@ -127,8 +144,8 @@ pip install qdrant-client faiss-cpu sentence-transformers rank-bm25 ragas chroma
 
 ## Optimization Plan
 
-- Persist indexes and experiment artifacts for repeatable benchmark runs.
-- Add typed config validation with richer diagnostics and schema export.
+- Persist Chroma and Qdrant snapshots plus experiment artifacts for repeatable benchmark runs.
+- Export the typed configuration schema for editors and CI checks.
 - Add async ingestion, batch embedding, and streaming generation.
 - Add graph extraction, Neo4j storage, and GraphRAG examples.
 - Add reproducible evaluation reports across datasets, retrievers, and generators.
@@ -136,4 +153,3 @@ pip install qdrant-client faiss-cpu sentence-transformers rank-bm25 ragas chroma
 ## Acknowledgements
 
 RAGForgeX is designed to wrap, not copy, mature open-source RAG ecosystem projects such as Qdrant, FAISS, Chroma, Milvus, sentence-transformers, rank-bm25, Docling, LlamaIndex, Ragas, DeepEval, and FlagEmbedding.
-

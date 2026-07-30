@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ragforgex"
-version = "0.2.0"
+version = "0.3.0"
 description = "A modular toolkit for building, switching, and evaluating RAG pipelines."
 readme = "README.md"
 requires-python = ">=3.10"

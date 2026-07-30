@@ -7,7 +7,15 @@ RAGForgeX 是一个模块化 RAG 实验工具包，用于快速构建、切换�
 - [English](README.md)
 - [한국어](README.ko.md)
 
-## V2 新增内容
+## V3 新增内容
+
+- 新增 typed YAML 配置校验，配置错误会更容易定位。
+- 新增 FAISS-compatible 本地索引持久化，可以保存和加载索引。
+- 新增分阶段 CLI：`index`、`ask`、`evaluate`、`components`。
+- 新增 JSON 和 Markdown 报告，包含答案、上下文、分数、耗时和评估结果。
+- 在回答 metadata 中加入项目名、检索器、top-k 和耗时。
+
+## V2 已有内容
 
 - 新增 Chroma 和 Milvus 向量存储适配器，并保留本地 fallback。
 - 新增语义切分和父子切分，适合更复杂的索引结构。
@@ -30,6 +38,15 @@ ragforgex run --config configs/faiss_dense.yaml --question "What is RAGForgeX?"
 ragforgex run --config configs/chroma_semantic.yaml --question "What does the toolkit compare?"
 ```
 
+V3 分阶段流程：
+
+```bash
+ragforgex index --config configs/faiss_dense.yaml --output outputs/faiss_local_rag/index
+ragforgex ask --config configs/faiss_dense.yaml --load-index --index-path outputs/faiss_local_rag/index --question "What is RAGForgeX?"
+ragforgex evaluate --config configs/faiss_dense.yaml --question "What is RAGForgeX?" --output outputs/faiss_local_rag
+ragforgex components
+```
+
 ## 核心能力
 
 | 层级 | V2 支持 |
@@ -45,9 +62,8 @@ ragforgex run --config configs/chroma_semantic.yaml --question "What does the to
 
 ## 后续优化方案
 
-- 增加可持久化索引和实验产物，便于复现实验结果。
-- 增加 typed config validation，输出更清晰的配置错误。
+- 增加 Chroma / Qdrant 快照和实验产物持久化，便于复现实验结果。
+- 导出 typed config schema，方便编辑器提示和 CI 检查。
 - 支持异步文档入库、批量 embedding 和流式生成。
 - 增加图谱抽取、Neo4j 存储和 GraphRAG 示例。
 - 增加跨数据集、检索器和生成器的标准化评估报告。
-

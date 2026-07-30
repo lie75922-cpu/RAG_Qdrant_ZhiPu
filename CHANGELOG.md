@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Added typed YAML configuration validation.
+- Added local index persistence for the FAISS-compatible store.
+- Added staged CLI commands: `index`, `ask`, `evaluate`, and `components`.
+- Added JSON and Markdown answer/evaluation reports.
+- Added runtime metadata for project, retriever, top-k, and duration.
+
 ## 0.2.0
 
 - Added Chroma and Milvus vector store adapters with local fallback behavior.
